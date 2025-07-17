@@ -21,41 +21,31 @@ const ThemeToggle = () => {
   const theme = useStore(themeStore)
   const controlsSun = useAnimation()
   const controlsMoon = useAnimation()
-  const controlsSystem = useAnimation()
 
   useEffect(() => {
     setMounted(true)
-    const savedTheme = localStorage.getItem('theme') as 'light' | 'dark' | 'system'
-    themeStore.set(savedTheme || 'system')
+    const savedTheme = localStorage.getItem('theme') as 'light' | 'dark'
+    themeStore.set(savedTheme || 'dark')
   }, [])
 
   useEffect(() => {
     if (!mounted) return
 
-    if (theme === 'system') {
-      controlsSun.start('hidden')
-      controlsSystem.start('visible')
-      controlsMoon.start('hidden')
-    } else {
-      controlsSun.start(theme === 'light' ? 'visible' : 'hidden')
-      controlsMoon.start(theme === 'dark' ? 'visible' : 'hidden')
-      controlsSystem.start('hidden')
-    }
+    controlsSun.start(theme === 'light' ? 'visible' : 'hidden')
+    controlsMoon.start(theme === 'dark' ? 'visible' : 'hidden')
 
     localStorage.setItem('theme', theme)
     applyTheme(theme)
-  }, [theme, mounted, controlsSun, controlsMoon, controlsSystem])
+  }, [theme, mounted, controlsSun, controlsMoon])
 
   const applyTheme = (newTheme: string) => {
     const root = document.documentElement
 
-    // 添加过渡类
     root.classList.add('disable-transition')
 
-    const isDark = newTheme === 'dark' || (newTheme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)
+    const isDark = newTheme === 'dark'
     root.classList.toggle('dark', isDark)
 
-    // 移除过渡类
     setTimeout(() => {
       root.classList.remove('disable-transition')
     }, 300)
@@ -64,10 +54,9 @@ const ThemeToggle = () => {
   const handleClick = () => {
     const themeMap = {
       light: 'dark',
-      dark: 'system',
-      system: 'light',
+      dark: 'light',
     }
-    themeStore.set(themeMap[theme] as 'light' | 'dark' | 'system')
+    themeStore.set(themeMap[theme] as 'light' | 'dark')
   }
 
   return (
@@ -81,15 +70,6 @@ const ThemeToggle = () => {
           transition={{ duration: 0.2, ease: 'easeInOut' }}
         >
           <span className="icon-[f7--sun-max-fill] size-5"></span>
-        </motion.div>
-        <motion.div
-          className="absolute inset-0"
-          variants={iconVariants}
-          initial="hidden"
-          animate={controlsSystem}
-          transition={{ duration: 0.2, ease: 'easeInOut' }}
-        >
-          <span className="icon-[majesticons--monitor-line] size-5"></span>
         </motion.div>
         <motion.div
           className="absolute inset-0"

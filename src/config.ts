@@ -18,10 +18,6 @@ export const HEADER_LINKS: Link[] = [
     name: 'Projects',
     url: '/projects',
   },
-  {
-    name: 'Tags',
-    url: '/tags',
-  },
 ]
 
 export const FOOTER_LINKS: Link[] = []
